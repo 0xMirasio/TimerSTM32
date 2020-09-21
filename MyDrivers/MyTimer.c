@@ -43,6 +43,11 @@ void MyTimer_IT_Enable(TIM_TypeDef * Timer) {
 	
 }
 
+void MyTimer_IT_Disable(TIM_TypeDef * Timer) {
+	Timer->DIER &= ~TIM_DIER_UIE; // interdit les interruptions sur TIM2
+	
+}
+
 void TIM2_IRQHandler(void) { 
 	// do nothing, test
 	TIM2->SR &= ~TIM_SR_UIF; // validation du timer
