@@ -54,10 +54,6 @@ int main(void)
 
 
 
-
-
-
-
 /**
   * @brief  System Clock Configuration
   *         The system Clock is configured as follow :
