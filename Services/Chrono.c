@@ -18,7 +18,7 @@ static Time Chrono_Time; // rem : static rend la visibilité de la variable Chron
 static TIM_TypeDef * Chrono_Timer=TIM1; // init par défaut au cas où l'utilisateur ne lance pas Chrono_Conf avant toute autre fct.
 
 // déclaration callback appelé toute les 10ms
-void Chrono_Task_10ms(void); // non utile,  TIM2_IRQHandler est appelé à la place de cette fonction
+void Chrono_Task_10ms(void);
 
 /**
 	* @brief  Configure le chronomètre. 
@@ -37,14 +37,13 @@ void Chrono_Conf(TIM_TypeDef * Timer)
 	Chrono_Timer=Timer;
 
 	// Réglage Timer pour un débordement à 10ms
-	// ARR = 99, PSC = 999 => 10 ms = 1/72Mhz * (ARR+1)*(PSC+1)
-	MyTimer_Conf(Timer,44999,16);
+	MyTimer_Conf(Chrono_Timer,999, 719);
 	
 	// Réglage interruption du Timer avec callback : Chrono_Task_10ms()
-	MyTimer_IT_Conf(Timer, Chrono_Task_10ms , 3);
+	MyTimer_IT_Conf(Chrono_Timer, Chrono_Task_10ms,3);
 	
 	// Validation IT
-	MyTimer_IT_Enable(Timer);
+	MyTimer_IT_Enable(Chrono_Timer);
 	
 	
 }
@@ -113,7 +112,7 @@ Time * Chrono_Read(void)
   * @retval Aucun
   */
 void Chrono_Task_10ms(void)
-{
+{ 
 	Chrono_Time.Hund++;
 	if (Chrono_Time.Hund==100)
 	{
@@ -131,7 +130,5 @@ void Chrono_Task_10ms(void)
 	}
 	
 }
-
-
 
 

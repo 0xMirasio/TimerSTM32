@@ -11,6 +11,37 @@ Utilise la lib MyTimers.h /.c
 
 #include "stm32f103xb.h" 
 
+/* =====================================================================================
+Les fonctions qui gèrent les IO (ajout par rapport à l'activité 1)
+=======================================================================================*/
+
+
+#define PinStart LL_GPIO_PIN_8
+#define PinStop LL_GPIO_PIN_6
+// à compléter pour la pin reset du chronometre
+#define PinLED LL_GPIO_PIN_10
+#define GPIO_Pin GPIOC
+#define GPIO_LED GPIOC
+
+
+
+
+
+
+/**
+	* @brief  polle les 3 entrées et gènère les actions à faire
+  * @note   Fct à lancer en tâche de fond (non bloquante)
+	* @param  None 
+  * @retval None
+  */
+		
+void Chrono_Background(void);
+
+//=======================================================================================//
+
+
+
+
 // Type de donnée utilisé dans le module
 
 typedef struct {
@@ -29,6 +60,10 @@ typedef struct {
   * @retval None
   */
 void Chrono_Conf(TIM_TypeDef * Timer);
+
+
+
+
 
 
 /**
@@ -65,5 +100,8 @@ void Chrono_Reset(void);
   * @retval adresse de la variable Time
   */
 Time * Chrono_Read(void);
+
+
+
 
 #endif
