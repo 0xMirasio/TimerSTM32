@@ -41,7 +41,6 @@ int main(void)
   /* Add your application code here */
   // Configuration chronomètre
 	Chrono_Conf(TIM3);
-	
 	// Lancement chronomètre
 	Chrono_Start(); 
 	
@@ -50,6 +49,7 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
+		Chrono_Background();
   }
 }
 
