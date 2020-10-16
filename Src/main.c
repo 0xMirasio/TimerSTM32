@@ -49,7 +49,7 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
-		Chrono_Background();
+		//Chrono_Background();
   }
 }
 

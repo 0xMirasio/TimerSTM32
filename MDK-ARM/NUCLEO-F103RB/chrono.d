@@ -12,3 +12,4 @@ nucleo-f103rb\chrono.o: ..\LLDrivers\inc\stm32f1xx_ll_gpio.h
 nucleo-f103rb\chrono.o: ..\Inc\stm32f1xx.h
 nucleo-f103rb\chrono.o: ..\LLDrivers\inc\stm32f1xx_ll_bus.h
 nucleo-f103rb\chrono.o: ..\LLDrivers\inc\stm32f1xx_ll_tim.h
+nucleo-f103rb\chrono.o: ..\LLDrivers\inc\stm32f1xx_ll_usart.h
