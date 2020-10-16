@@ -1,8 +1,8 @@
 // A COMPLETER
 
 /*
-Service permettant de chornomÈtrer jusqu'‡ 59mn 59s 99 1/100
-Utilise un timer au choix (TIMER1 ‡ TIMER4).
+Service permettant de chornom√©trer jusqu'√† 59mn 59s 99 1/100
+Utilise un timer au choix (TIMER1 √† TIMER4).
 Utilise la lib MyTimers.h /.c
 */
 
@@ -14,25 +14,25 @@ Utilise la lib MyTimers.h /.c
 #include "stm32f1xx_ll_tim.h"
 #include "stm32f1xx_ll_usart.h"
 
-#define separator 0x3a
-#define retour 0x0a
-#define usart USART2
+#define separator 0x3a // 0x3a = :
+#define retour 0x0a // 0x0a = \n
+#define usart USART2 // USART2 au lieu d'USART3, car voila
 
-// variable privÈe de type Time qui mÈmorise la durÈe mesurÈe
-static Time Chrono_Time; // rem : static rend la visibilitÈ de la variable Chrono_Time limitÈe ‡ ce fichier 
-// variable privÈe qui mÈmorise pour le module le timer utilisÈ par le module
+// variable priv√©e de type Time qui m√©morise la dur√©e mesur√©e
+static Time Chrono_Time; // rem : static rend la visibilit√© de la variable Chrono_Time limit√©e √† ce fichier 
+// variable priv√©e qui m√©morise pour le module le timer utilis√© par le module
 static int lock = 0;
-static int cpt = 0;
-static TIM_TypeDef * Chrono_Timer=TIM1; // init par dÈfaut au cas o˘ l'utilisateur ne lance pas Chrono_Conf avant toute autre fct.
-// dÈclaration callback appelÈ toute les 10ms
+static int cpt = 0; 
+static TIM_TypeDef * Chrono_Timer=TIM1; // init par d√©faut au cas o√π l'utilisateur ne lance pas Chrono_Conf avant toute autre fct.
+// d√©claration callback appel√© toute les 10ms
 void Chrono_Task_10ms(void);
 void Chrono_Background(void);
 void usart_conf(USART_TypeDef * ux);
 void Chrono_Conf_io(GPIO_TypeDef * gpio);
 /**
-	* @brief  Configure le chronomËtre. 
+	* @brief  Configure le chronom√®tre. 
   * @note   A lancer avant toute autre fonction.
-	* @param  Timer : indique le timer ‡ utiliser par le chronomËtre, TIM1, TIM2, TIM3 ou TIM4
+	* @param  Timer : indique le timer √† utiliser par le chronom√®tre, TIM1, TIM2, TIM3 ou TIM4
   * @retval None
   */
 void Chrono_Conf(TIM_TypeDef * Timer)
@@ -45,10 +45,10 @@ void Chrono_Conf(TIM_TypeDef * Timer)
 	// Fixation du Timer
 	Chrono_Timer=Timer;
 
-	// RÈglage Timer pour un dÈbordement ‡ 10ms
+	// R√©glage Timer pour un d√©bordement √† 10ms
 	MyTimer_Conf(Chrono_Timer,999, 719);
 	
-	// RÈglage interruption du Timer avec callback : Chrono_Task_10ms()
+	// R√©glage interruption du Timer avec callback : Chrono_Task_10ms()
 	MyTimer_IT_Conf(Chrono_Timer, Chrono_Task_10ms,3);
 	
 	Chrono_Conf_io(GPIOC);
@@ -68,14 +68,14 @@ void Chrono_Background(void) {
 	val_pc8 = LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_8);
 	val_pc13 = !LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_13);
 	
-	if (val_pc13) { // si bouton user activÈ, on reset les timer
+	if (val_pc13) { // si bouton user activ√©, on reset les timer
 			Chrono_Reset();
 	}
 	
-	if (!val_pc8) { 
-		val_pc8 = LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_8);
+	if (!val_pc8) {  // si bouton rouge activ√©
+		val_pc8 = LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_8); // on recup√®re la valeur du bouton
 		cpt=0;
-		if (lock == 0) {
+		if (lock == 0) { // si non bloqu√©
 			lock = 1; // on bloque le chrono
 			while( cpt < 300 ) {} // on attend en utilisant l'horloge interne pour avoir un "delai"
 		}
@@ -115,7 +115,7 @@ void Chrono_Conf_io(GPIO_TypeDef * gpio) {
 		
 		// set up bouton reset timer pc13
 	
-		LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
+		LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC); // horloge interne gpioC ON
 		LL_GPIO_InitTypeDef gpioStruct3;
 		gpioStruct3.Pin = LL_GPIO_PIN_13; 
 		gpioStruct3.Mode = LL_GPIO_MODE_FLOATING;
@@ -126,8 +126,8 @@ void Chrono_Conf_io(GPIO_TypeDef * gpio) {
 
 
 /**
-	* @brief  DÈmarre le chronomËtre. 
-  * @note   si la durÈe dÈpasse 59mn 59sec 99 Hund, elle est remise ‡ zÈro et repart
+	* @brief  D√©marre le chronom√®tre. 
+  * @note   si la dur√©e d√©passe 59mn 59sec 99 Hund, elle est remise √† z√©ro et repart
 	* @param  Aucun
   * @retval Aucun
   */
@@ -138,7 +138,7 @@ void Chrono_Start(void)
 
 
 /**
-	* @brief  ArrÍte le chronomËtre. 
+	* @brief  Arr√™te le chronom√®tre. 
   * @note   
 	* @param  Aucun
   * @retval Aucun
@@ -150,7 +150,7 @@ void Chrono_Stop(void)
 
 
 /**
-	* @brief  Remet le chronomËtre ‡ 0 
+	* @brief  Remet le chronom√®tre √† 0 
   * @note   
 	* @param  Aucun
   * @retval Aucun
@@ -165,7 +165,7 @@ void Chrono_Reset(void)
 
 
 /**
-	* @brief  Renvoie l'adresse de la variable Time privÈe gÈrÈe dans le module Chrono.c
+	* @brief  Renvoie l'adresse de la variable Time priv√©e g√©r√©e dans le module Chrono.c
   * @note   
 	* @param  Aucun
   * @retval adresse de la variable Time
@@ -175,12 +175,12 @@ Time * Chrono_Read(void)
 	return &Chrono_Time;
 }
 
-void usart_conf(USART_TypeDef * ux) {
-		LL_USART_Disable(ux);
-		LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2);
-		LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
+void usart_conf(USART_TypeDef * ux) { // fonction config usart
+		LL_USART_Disable(ux); // on desactive l'usart
+		LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2); // activation horloge interne usart
+		LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA); // activaiton horloge gpioA
 	
-		LL_GPIO_InitTypeDef gp;
+		LL_GPIO_InitTypeDef gp; 
 		
 		gp.Pin = LL_GPIO_PIN_1;
 		gp.Mode = LL_GPIO_MODE_ALTERNATE;
@@ -200,30 +200,31 @@ void usart_conf(USART_TypeDef * ux) {
 	
 		LL_USART_InitTypeDef us;
 		us.BaudRate = 9600;
-		us.HardwareFlowControl =	LL_USART_HWCONTROL_NONE;
-		us.TransferDirection = LL_USART_DIRECTION_TX_RX;
-		us.Parity = LL_USART_PARITY_NONE;
-		us.StopBits = LL_USART_STOPBITS_1;
-		us.DataWidth = LL_USART_DATAWIDTH_8B;
-		LL_USART_Init(ux, &us);
+		us.HardwareFlowControl =	LL_USART_HWCONTROL_NONE; // jsp
+		us.TransferDirection = LL_USART_DIRECTION_TX_RX; // tx_rx, demand√©e sujet activit√©3
+		us.Parity = LL_USART_PARITY_NONE; // pas de parit√©
+		us.StopBits = LL_USART_STOPBITS_1; // 1 bit de stop
+		us.DataWidth = LL_USART_DATAWIDTH_8B; // 8b de donn√©es
+		LL_USART_Init(ux, &us); // init de la struct
 		
-		LL_USART_EnableIT_RXNE(ux);
-		LL_USART_Enable(ux);
+		LL_USART_EnableIT_RXNE(ux); // jsp
+		LL_USART_Enable(ux); // activation usart
 
 }
 
 
-void send2b(int toSend) {
+void send2b(int toSend) { // a modifier, 62 => 62%10 = 2, 62/10 => 6.2->6 , a implementer
 	int dec;
 	for (int i=0; i <= 10 ; i++) {
-		for (int j=0; j < 10 ; j++) {
-				dec = i+j; 
-				if (dec == toSend) {
-					 LL_USART_TransmitData8(usart,i+0x30);
+		for (int j=0; j < 10 ; j++) { // on parcout une valeur de type XY allant de 0 √† 100
+				dec = i+j; // on d√©compose XY en X+Y
+				if (dec == toSend) { // MAIS MDR X+Y CA FAIT PAS XY JE VIENS DECRIRE QUOIIIIIIIIIIII
+						
+					 LL_USART_TransmitData8(usart,i+0x30); // on send l'info + 0x30 (conversion table ascii)
 					 while(LL_USART_IsActiveFlag_TC(usart) == 0) {} // on att la transmission du bit 1
 					 LL_USART_TransmitData8(usart,j+0x30);
 					 while(LL_USART_IsActiveFlag_TC(usart) == 0) {} // on att la transmission du bit 2
-					 i=11;
+					 i=11; // on sort de la boucle
 					 j=10;
 				}
 		}			
@@ -231,12 +232,12 @@ void send2b(int toSend) {
 }
 
 void send1b(int toSend) {
-	LL_USART_TransmitData8(usart,toSend);
+	LL_USART_TransmitData8(usart,toSend); // on send un cara sp√©ciale
 	while(LL_USART_IsActiveFlag_TC(usart) == 0) {} // on att la transmission du bit 1
 }
 
 /**
-	* @brief  incrÈmente la variable privÈe Chron_Time modulo 60mn 
+	* @brief  incr√©mente la variable priv√©e Chron_Time modulo 60mn 
   * @note   
 	* @param  Aucun
   * @retval Aucun
@@ -244,7 +245,7 @@ void send1b(int toSend) {
 void Chrono_Task_10ms(void)
 { 
 	cpt++;
-	
+	// on envoie la trame
 	send2b(Chrono_Time.Min);
 	send1b(separator);
 	send2b(Chrono_Time.Sec);
