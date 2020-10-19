@@ -15,7 +15,7 @@ Utilise la lib MyTimers.h /.c
 #include "stm32f1xx_ll_usart.h"
 
 #define separator 0x3a // 0x3a = :
-#define retour 0x0a // 0x0a = \n
+#define retour 0x0D // 0x0D = \n 0x0a
 #define usart USART2 // USART2 au lieu d'USART3, car voila
 
 // variable privée de type Time qui mémorise la durée mesurée
@@ -176,6 +176,7 @@ Time * Chrono_Read(void)
 }
 
 void usart_conf(USART_TypeDef * ux) { // fonction config usart
+	
 		LL_USART_Disable(ux); // on desactive l'usart
 		LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2); // activation horloge interne usart
 		LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA); // activaiton horloge gpioA
@@ -188,7 +189,7 @@ void usart_conf(USART_TypeDef * ux) { // fonction config usart
 		gp.Speed = LL_GPIO_SPEED_FREQ_HIGH;
 		gp.Pull = LL_GPIO_PULL_UP;
 	
-		LL_GPIO_Init(GPIOA, &gp); // pin TX 1
+		LL_GPIO_Init(GPIOA, &gp); // pin RX=1
 	
 		gp.Pin = LL_GPIO_PIN_2;
 		gp.Mode = LL_GPIO_MODE_ALTERNATE;
@@ -196,7 +197,7 @@ void usart_conf(USART_TypeDef * ux) { // fonction config usart
 		gp.Speed = LL_GPIO_SPEED_FREQ_HIGH;
 		gp.Pull = LL_GPIO_PULL_UP;
 	
-		LL_GPIO_Init(GPIOA, &gp); // pin RX = 2
+		LL_GPIO_Init(GPIOA, &gp); // pin TX = 2
 	
 		LL_USART_InitTypeDef us;
 		us.BaudRate = 9600;
@@ -208,27 +209,18 @@ void usart_conf(USART_TypeDef * ux) { // fonction config usart
 		LL_USART_Init(ux, &us); // init de la struct
 		
 		LL_USART_EnableIT_RXNE(ux); // jsp
+		LL_USART_EnableIT_TC(ux);
 		LL_USART_Enable(ux); // activation usart
 
 }
 
 
 void send2b(int toSend) { // a modifier, 62 => 62%10 = 2, 62/10 => 6.2->6 , a implementer
-	int dec;
-	for (int i=0; i <= 10 ; i++) {
-		for (int j=0; j < 10 ; j++) { // on parcout une valeur de type XY allant de 0 à 100
-				dec = i+j; // on décompose XY en X+Y
-				if (dec == toSend) { // MAIS MDR X+Y CA FAIT PAS XY JE VIENS DECRIRE QUOIIIIIIIIIIII
-						
-					 LL_USART_TransmitData8(usart,i+0x30); // on send l'info + 0x30 (conversion table ascii)
-					 while(LL_USART_IsActiveFlag_TC(usart) == 0) {} // on att la transmission du bit 1
-					 LL_USART_TransmitData8(usart,j+0x30);
-					 while(LL_USART_IsActiveFlag_TC(usart) == 0) {} // on att la transmission du bit 2
-					 i=11; // on sort de la boucle
-					 j=10;
-				}
-		}			
-	}
+	
+	LL_USART_TransmitData8(usart,(toSend/10)+0x30); // on send l'info + 0x30 (conversion table ascii)
+	while(LL_USART_IsActiveFlag_TC(usart) == 0) {} // on att la transmission du bit 1
+	LL_USART_TransmitData8(usart,(toSend%10)+0x30);
+	while(LL_USART_IsActiveFlag_TC(usart) == 0) {} // on att la transmission du bit 2
 }
 
 void send1b(int toSend) {
@@ -251,6 +243,7 @@ void Chrono_Task_10ms(void)
 	send2b(Chrono_Time.Sec);
 	send1b(separator);
 	send2b(Chrono_Time.Hund);
+	send1b(separator);
 	send1b(retour);
 	
 	if (Chrono_Time.Sec % 2 == 0) {
